@@ -16,7 +16,7 @@ spec:
         "kubernetes.io/os": linux
       containers:
       - name: k8s-nginx
-        image: nginx:alpine
+        image: ecvtwsa.azurecr.io/test_ap:2023.10.10
         resources:
           requests:
             cpu: 100m
