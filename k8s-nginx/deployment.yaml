@@ -1,28 +1,32 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: k8s-nginx
+  name: k8s-nginx-acr
+  namespace: k8s-nginx-acr
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: k8s-nginx
+      app: k8s-nginx-acr
   template:
     metadata:
       labels:
-        app: k8s-nginx
+        app: k8s-nginx-acr
     spec:
       nodeSelector:
         "kubernetes.io/os": linux
       containers:
-      - name: k8s-nginx
-        image: ecvtwsa.azurecr.io/nginx:alpine
-        resources:
-          requests:
-            cpu: 100m
-            memory: 128Mi
-          limits:
-            cpu: 250m
-            memory: 256Mi
-        ports:
-        - containerPort: 80
+        - name: k8s-nginx-acr
+          image: nginx:alpine
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+          ports:
+          - containerPort: 80
+      imagePullSecrets:
+        - name: acr-secret
