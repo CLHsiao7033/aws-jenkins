@@ -23,7 +23,7 @@ spec:
         "kubernetes.io/os": linux
       containers:
         - name: k8s-nginx-ecr
-          image: nginx:alpine
+          image: 512861115106.dkr.ecr.ap-southeast-3.amazonaws.com/hello_world:v3
           resources:
             requests:
               cpu: 100m
