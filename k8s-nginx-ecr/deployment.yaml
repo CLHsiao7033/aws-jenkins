@@ -7,29 +7,22 @@ metadata:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: k8s-nginx-ecr
+  name: nginx-deployment
   namespace: k8s-nginx-ecr
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: k8s-nginx-ecr
+      app: nginx-deployment
   template:
     metadata:
       labels:
-        app: k8s-nginx-ecr
+        app: nginx-deployment
     spec:
       nodeSelector:
         "kubernetes.io/os": linux
       containers:
-        - name: k8s-nginx-ecr
+        - name: nginx-deployment
           image: 512861115106.dkr.ecr.ap-southeast-3.amazonaws.com/hello_world:v3
-          resources:
-            requests:
-              cpu: 100m
-              memory: 128Mi
-            limits:
-              cpu: 250m
-              memory: 256Mi
           ports:
           - containerPort: 80
