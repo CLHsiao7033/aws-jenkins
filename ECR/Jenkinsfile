@@ -1,0 +1,81 @@
+// Build image to ECR
+// use plugin --> AWS Credentials --> withCredentials
+properties([pipelineTriggers([githubPush()])])
+pipeline {
+    agent any 
+    environment {
+        IMAGE_TAG = 'v2'
+        IMAGE_NAME = 'hello_world'
+        IMAGE_URL = "${IMAGE_NAME}:${IMAGE_TAG}"
+        CONTAINER_NAME = "${IMAGE_NAME}"
+        DOCKERFILE = './Dockerfile'
+
+        AWS_REGION = 'ap-southeast-3'
+        AWS_ACCOUNT_ID = '512861115106'
+        AWS_KEY_ID = 'ecv_poc_1_accessKeys'
+    }
+    stages {
+        stage("GitHub git clone") {
+             steps {
+                git url:  'https://github.com/CLHsiao7033/aws-jenkins.git',
+                branch: 'main'
+            }
+        }
+        stage('Build image') {
+            steps {
+                sh """
+                cd k8s-nginx && \
+                docker build -t ${IMAGE_URL} . -f ${DOCKERFILE}
+                """
+            }
+        }
+        stage('Authenticate ECR') {
+            steps {
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'ecv_poc_1_accessKeys',
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                    ]]) {
+                    sh """
+                    aws ecr get-login-password \
+                    --region ${AWS_REGION} \
+                    | docker login \
+                    --username AWS \
+                    --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+                    """
+                }
+            }
+        }
+        stage('Create ECR') {
+            steps {
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'ecv_poc_1_accessKeys',
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                    ]]) {
+                    sh """
+                    aws ecr create-repository \
+                    --repository-name ${IMAGE_NAME} \
+                    --image-scanning-configuration scanOnPush=true \
+                    --region ${AWS_REGION}
+                    """
+                }
+            }
+        }
+        stage('ECR tag and push') {
+            steps {
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'ecv_poc_1_accessKeys',
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                    ]]) {
+                    sh 'docker tag ${IMAGE_URL} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${IMAGE_URL}'
+                    sh 'docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${IMAGE_URL}'
+                }
+            }
+        }
+    }
+}
