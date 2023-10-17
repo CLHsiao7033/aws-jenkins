@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
       - name: nginx-deployment
-        image: nginx:alpine
+        image: 512861115106.dkr.ecr.ap-southeast-3.amazonaws.com/hello_world:v3
         ports:
           - containerPort: 80
         resources:
