@@ -7,7 +7,7 @@ spec:
   serviceRef:
     name: twplus-demo
     port: 80
-  targetGroupARN: arn:aws:elasticloadbalancing:ap-southeast-3:512861115106:targetgroup/tg789-80/4b31e7a2ae94fba1
+  targetGroupARN: arn:aws:elasticloadbalancing:ap-southeast-3:512861115106:targetgroup/twplus-tg-80/e7a39214d2bb874e
   targetType: ip
   networking:
     ingress:
