@@ -37,6 +37,6 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: 512861115106.dkr.ecr.ap-southeast-3.amazonaws.com/twplus:v1
+        image: 512861115106.dkr.ecr.ap-southeast-3.amazonaws.com/twplus:v2
         ports:
         - containerPort: 80
