@@ -1,0 +1,18 @@
+apiVersion: elbv2.k8s.aws/v1beta1
+kind: TargetGroupBinding
+metadata:
+  namespace: nginx-ns-80
+  name: sample-tgb
+spec:
+  serviceRef:
+    name: twplus-demo
+    port: 80
+  targetGroupARN: arn:aws:elasticloadbalancing:ap-southeast-3:512861115106:targetgroup/tg789-80/4b31e7a2ae94fba1
+  targetType: ip
+  networking:
+    ingress:
+    - from:
+      - securityGroup:
+          groupID: sg-05542d582650e7e18
+      ports:
+      - protocol: TCP
